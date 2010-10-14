@@ -80,7 +80,11 @@ module WithoutScope
         when :previous, :last
           revisions.first
         when Time
-          revisions.find(:first, :conditions => ["? >= ? and ? <= ?", :revisable_revised_at, by.utc, :revisable_current_at, by.utc])
+          if (self[:revisable_current_at] <= by)
+            self.current_revision
+          else
+            revisions.find(:first, :conditions => ["? > ? and ? <= ?", :revisable_revised_at, by.utc, :revisable_current_at, by.utc])
+          end
         when self.revisable_number
           self
         else
@@ -295,6 +299,7 @@ module WithoutScope
       # Set some defaults for a newly created +Revisable+ instance.
       def before_revisable_create #:nodoc:
         self[:revisable_is_current] = true
+        self[:revisable_current_at] = Time.current
         self.revision_number ||= 0
       end
       
