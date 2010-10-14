@@ -80,7 +80,7 @@ module WithoutScope
         when :previous, :last
           revisions.first
         when Time
-          revisions.find(:first, :conditions => ["? >= ? and ? <= ?", :revisable_revised_at, by, :revisable_current_at, by])
+          revisions.find(:first, :conditions => ["? >= ? and ? <= ?", :revisable_revised_at, by.utc, :revisable_current_at, by.utc])
         when self.revisable_number
           self
         else
