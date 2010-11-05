@@ -67,8 +67,11 @@ module WithoutScope
       def revision_setup #:nodoc:
         now = Time.current
         prev = current_revision.revisions.first
-        prev.update_attribute(:revisable_revised_at, now) if prev
-        self[:revisable_current_at] = now + 1.second
+        self[:revisable_current_at] = prev[:revisable_revised_at] if prev
+        self[:revisable_current_at] = current_revision[:created_at] unless prev
+        self[:revisable_revised_at] = now
+        current_revision.send(:revisable_current_at.to_s + '=', now)
+        current_revision.save(:without_revision => true)
         self[:revisable_is_current] = false
         self[:revisable_branched_from_id] = current_revision[:revisable_branched_from_id]
         self[:revisable_type] = current_revision[:type] || current_revision.class.name
