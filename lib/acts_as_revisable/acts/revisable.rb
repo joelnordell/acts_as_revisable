@@ -299,7 +299,7 @@ module WithoutScope
         orig_no_revision = self.no_revision?
         self.revisable_new_params ||= args.extract_options!
         self.no_revision! if self.revisable_new_params.delete :without_revision
-        super(args)
+        super(*args)
         self.no_revision!(orig_no_revision)
         self.revisable_new_params = orig_revisable_new_params
       end
